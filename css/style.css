@@ -1,0 +1,31 @@
+.colorBotonA{
+    color: white;
+    background-color: green;
+    margin-top: 1rem;
+}
+
+.colorBotonB{
+    color: white;
+    background-color: red;
+    margin-top: 1rem;
+}
+
+.colorBotonC{
+    color: white;
+    background-color: gray;
+    margin-top: 1rem;
+}
+
+.imgCuentas{
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    margin-top: 1rem;
+    
+}
+
+.card{
+    display: flex;
+    align-items: center;
+    margin: 0.5 rem;
+}
