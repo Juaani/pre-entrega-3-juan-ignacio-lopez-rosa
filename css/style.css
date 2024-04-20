@@ -2,18 +2,21 @@
     color: white;
     background-color: green;
     margin-top: 1rem;
+    width: 100%;
 }
 
 .colorBotonB{
     color: white;
     background-color: red;
     margin-top: 1rem;
+    width: 100%;
 }
 
 .colorBotonC{
     color: white;
     background-color: gray;
     margin-top: 1rem;
+    width: 100%;
 }
 
 .imgCuentas{

@@ -1,15 +1,16 @@
 //FUNCIONALIDADES
 
-//1) Permitir seleccionar cuentas mostrandolas en el DOM
-//2) Generar balance cuenta
-//3) Mostrar resumen de cuenta
+//1) Mostrar cuentas en el DOM
+//2) Permitir registrar gastos en cada cuenta
+//3) Permitir ingresos gastos en cada cuenta
+//3) Mostrar resumen de cuenta en el DOM
+//4) Mostrar balance en el importe
 
 
 //GENERAMOS LAS CLASES 
 
 class Gasto{
-    constructor(id,importe,desc,cuenta){
-        this.id = id;
+    constructor(importe,desc,cuenta){
         this.importe = importe;
         this.desc = desc;
         this.cuenta = cuenta;
@@ -17,8 +18,7 @@ class Gasto{
 }
 
 class Ingreso{
-    constructor(id,importe,desc,cuenta){
-        this.id = id;
+    constructor(importe,desc,cuenta){
         this.importe = importe;
         this.desc = desc;
         this.cuenta = cuenta;
@@ -37,25 +37,29 @@ class Cuenta{
 //INSTANCIAMOS LAS CUENTAS
 
 const cuentaPrincipal = new Cuenta(1,"Cuenta Principal","./img/principal.png");
-const cuentaEfectivo = new Cuenta(2,"Efectivo","./img/efectivo.png");
-const cuentaBanco = new Cuenta(3,"Banco","./img/banco.webp");
+const cuentaEfectivo = new Cuenta(2,"Cuenta Efectivo","./img/efectivo.png");
+const cuentaBanco = new Cuenta(3,"Cuenta Banco","./img/banco.webp");
 
 const cuentas = [cuentaPrincipal,cuentaEfectivo,cuentaBanco];
 
 //INSTANCIAMOS LOS GASTOS e INGRESOS
 
-const gastoA = new Gasto(1,30000,"Arreglo PC",cuentaPrincipal.id);
-const gastoB = new Gasto(2,3000,"Arreglo PC",cuentaBanco.id);
-const gastoC = new Gasto(3,25000,"Arreglo PC",cuentaEfectivo.id);
-const gastoD = new Gasto(4,10000,"Arreglo PC",cuentaPrincipal.id);
-const gastoE = new Gasto(5,11000,"Arreglo PC",cuentaEfectivo.id);
+const gastos = [];
 
-const gastos = [gastoA,gastoB,gastoC,gastoD,gastoE];
+const ingresos = [];
 
-const ingA = new Ingreso(1,3000000,"Pagina Web",cuentaPrincipal.id);
-const ingB = new Ingreso(2,40000,"Regalo cumpleanios",cuentaEfectivo.id);
 
-const ingresos = [ingA,ingB];
+//LOCALSTORAGE:
+
+if(localStorage.getItem("gastos")){
+    gastoAlmacen = JSON.parse(localStorage.getItem("gastos"))
+};
+
+
+if(localStorage.getItem("ingresos")){
+    ingAlmacen = JSON.parse(localStorage.getItem("ingresos"))
+};
+
 
 //GENERAMOS LAS CUENTAS EN EL DOM
 
@@ -74,61 +78,69 @@ const mostrarCuentas = () => {
                 <p id="valorCuenta${cuenta.id}">$ ${cuenta.valor}</p>
                 <div class="row">
                     <div class="col-lg-6 col-md-12 col-sm-12">
-                        <button id="boton${cuenta.id}" class="colorBotonA btn">Calcular Balance</button>
+                        <button id="registrarGasto${cuenta.id}" class="colorBotonB btn">Registrar Gasto</button>
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12">
-                    <button id="verResumen${cuenta.id}" class="colorBotonB btn">Ver Resumen</button>
-                </div>
+                    <button id="registrarIng${cuenta.id}" class="colorBotonA btn">Registrar Ingreso</button>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                    <button id="verResumen${cuenta.id}" class="colorBotonC btn">Ver Resumen</button>
+                    </div>
                 </div>
             </div>
         `
         contenedorCuentas.appendChild(card);
+        localStorage.setItem("gastos", JSON.stringify(gastos));
+        localStorage.setItem("ingresos", JSON.stringify(ingresos));
 
-        const boton = document.getElementById(`boton${cuenta.id}`);
-        boton.addEventListener("click", ()=>{
-            const valorCuenta = document.getElementById(`valorCuenta${cuenta.id}`);
-            valorCuenta.innerHTML=""
-            valor=document.createElement("div")
-            valor.innerHTML=`<p id="valorCuenta">$ ${calcularBalance(cuenta.id)}</p>`
-            valorCuenta.appendChild(valor);
+        const registrarGasto = document.getElementById(`registrarGasto${cuenta.id}`);
+        registrarGasto.addEventListener("click",()=>{
+            cargarGasto(cuenta.id)
         })
 
-        const botonResumen = document.getElementById(`verResumen${cuenta.id}`);
-        botonResumen.addEventListener("click",()=>{
-            verResumen(cuenta.id)
+        const registrarIngreso = document.getElementById(`registrarIng${cuenta.id}`);
+        registrarIngreso.addEventListener("click",()=>{
+            cargarIngreso(cuenta.id)
         })
+
+        const verResumenes = document.getElementById(`verResumen${cuenta.id}`);
+        verResumenes.addEventListener("click",()=>{
+            verResumen(cuenta.id);
+        })
+        
     })  
 }
 
 mostrarCuentas();
 
-const calcularBalance = (id) =>{
-    let balance =0;
-    let totalGasto = 0;
-    let totalIng = 0;
-    
-    gastos.forEach(gasto =>{
-        if(gasto.cuenta === id){
-            totalGasto = totalGasto+gasto.importe;
-        }    
-    })
+const cargarGasto = (id) =>{
+    let nombreGasto = prompt("Ingrese el nombre del gasto: ");
+    let valorGasto = parseFloat(prompt("Ingrese el valor del gasto: "));
 
-    ingresos.forEach(ing =>{
-        if(ing.cuenta === id){
-            totalIng = totalIng+ing.importe;
-        }
-    })
+    let gastoCargado = new Gasto(valorGasto,nombreGasto,id);
+    gastos.push(gastoCargado);
 
-    balance =(totalIng - totalGasto);
-    return balance;
-    
+    actualizarImporteCuenta(id);
+
+    localStorage.setItem("gastos", JSON.stringify(gastos));
+}
+
+const cargarIngreso = (id) =>{
+    let nombreIng = prompt("Ingrese el nombre del ingreso: ");
+    let valorIng = parseFloat(prompt("Ingrese el valor del ingreso: "));
+
+    let ingCargado = new Ingreso(valorIng,nombreIng,id);
+    ingresos.push(ingCargado);
+
+    actualizarImporteCuenta(id);
+
+    localStorage.setItem("ingresos", JSON.stringify(ingresos));
 }
 
 const verResumen = (id) =>{
-
     contenedorResumen.innerHTML="";
 
-   balance = (calcularBalance(id)).toString();
+    balance = (calcularBalance(id)).toString();
    const gastosResumen = [];
    const ingresosResumen = [];
 
@@ -175,6 +187,32 @@ const verResumen = (id) =>{
     <p class="text-center">El balance de la cuenta es $${balance}</p>
    `
    contenedorResumen.appendChild(balanceResumen);
+   actualizarImporteCuenta(id);
 }
 
+const calcularBalance = (id) =>{
+    let balance =0;
+    let totalGasto = 0;
+    let totalIng = 0;
+    
+    gastos.forEach(gasto =>{
+        if(gasto.cuenta === id){
+            totalGasto = totalGasto+gasto.importe;
+        }    
+    })
 
+    ingresos.forEach(ing =>{
+        if(ing.cuenta === id){
+            totalIng = totalIng+ing.importe;
+        }
+    })
+
+    balance =(totalIng - totalGasto);
+    return balance;
+    
+}
+
+const actualizarImporteCuenta = (id) =>{
+    const valorCuenta = document.getElementById(`valorCuenta${id}`);
+    valorCuenta.innerHTML = `<p id="valorCuenta${id}">$ ${calcularBalance(id)}</p>`;
+}
