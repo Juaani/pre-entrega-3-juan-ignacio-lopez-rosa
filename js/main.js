@@ -77,45 +77,59 @@ const mostrarCuentas = () => {
                 <h5 class="text-center">${cuenta.nombre}</h5>
                 <p id="valorCuenta${cuenta.id}">$ ${cuenta.valor}</p>
                 <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <form action="" class="text-center">
+                            <input id="campoA${cuenta.id}" type="text" placeholder="Ingrese Descripcion">
+                            <input id="campoB${cuenta.id}" type="text" placeholder="Ingrese Importe">
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <button id="registrarGasto${cuenta.id}" class="colorBotonB btn">Registrar Gasto</button>
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12">
                     <button id="registrarIng${cuenta.id}" class="colorBotonA btn">Registrar Ingreso</button>
                     </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
                     <button id="verResumen${cuenta.id}" class="colorBotonC btn">Ver Resumen</button>
                     </div>
                 </div>
             </div>
         `
         contenedorCuentas.appendChild(card);
-        localStorage.setItem("gastos", JSON.stringify(gastos));
-        localStorage.setItem("ingresos", JSON.stringify(ingresos));
+;
+
+        const importe = document.getElementById(`campoB${cuenta.id}`);
+        const descripcion = document.getElementById(`campoA${cuenta.id}`);
 
         const registrarGasto = document.getElementById(`registrarGasto${cuenta.id}`);
         registrarGasto.addEventListener("click",()=>{
-            cargarGasto(cuenta.id)
+            cargarGasto(cuenta.id,descripcion.value,importe.value)
         })
 
         const registrarIngreso = document.getElementById(`registrarIng${cuenta.id}`);
+        
         registrarIngreso.addEventListener("click",()=>{
-            cargarIngreso(cuenta.id)
+            cargarIngreso(cuenta.id,descripcion.value,importe.value)
         })
 
         const verResumenes = document.getElementById(`verResumen${cuenta.id}`);
         verResumenes.addEventListener("click",()=>{
             verResumen(cuenta.id);
         })
+
+        localStorage.setItem("gastos", JSON.stringify(gastos));
+        localStorage.setItem("ingresos", JSON.stringify(ingresos))
         
     })  
 }
 
 mostrarCuentas();
 
-const cargarGasto = (id) =>{
-    let nombreGasto = prompt("Ingrese el nombre del gasto: ");
-    let valorGasto = parseFloat(prompt("Ingrese el valor del gasto: "));
+const cargarGasto = (id,desc,imp) =>{
+    let nombreGasto = desc;
+    let valorGasto = parseInt(imp);
 
     let gastoCargado = new Gasto(valorGasto,nombreGasto,id);
     gastos.push(gastoCargado);
@@ -125,9 +139,9 @@ const cargarGasto = (id) =>{
     localStorage.setItem("gastos", JSON.stringify(gastos));
 }
 
-const cargarIngreso = (id) =>{
-    let nombreIng = prompt("Ingrese el nombre del ingreso: ");
-    let valorIng = parseFloat(prompt("Ingrese el valor del ingreso: "));
+const cargarIngreso = (id,desc,imp) =>{
+    let nombreIng = desc;
+    let valorIng = parseInt(imp);
 
     let ingCargado = new Ingreso(valorIng,nombreIng,id);
     ingresos.push(ingCargado);
